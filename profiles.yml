@@ -1,0 +1,80 @@
+dbt_affiliate_api:
+  target: "{{ env_var('AFFILIATE_DBT_TARGET', 'awin_transactions') }}"
+  outputs:
+    awin_transactions:
+      type: duckdb
+      path: >-
+        {{ env_var('AFFILIATE_DUCKDB_PATH', env_var('HOME')) ~ '/affiliate_awin_transactions.duckdb' }}
+      schema: staging
+      threads: 1
+      module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+    awin_validations:
+      type: duckdb
+      path: >-
+        {{ env_var('AFFILIATE_DUCKDB_PATH', env_var('HOME')) ~ '/affiliate_awin_validations.duckdb' }}
+      schema: staging
+      threads: 1
+      module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+    commission_factory:
+      type: duckdb
+      path: >-
+        {{ env_var('AFFILIATE_DUCKDB_PATH', env_var('HOME')) ~ '/affiliate_commission_factory.duckdb' }}
+      schema: staging
+      threads: 1
+      module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+    commission_junction:
+      type: duckdb
+      path: >-
+        {{ env_var('AFFILIATE_DUCKDB_PATH', env_var('HOME')) ~ '/affiliate_commission_junction.duckdb' }}
+      schema: staging
+      threads: 1
+      module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+    hasoffers:
+      type: duckdb
+      path: >-
+        {{ env_var('AFFILIATE_DUCKDB_PATH', env_var('HOME')) ~ '/affiliate_hasoffers.duckdb' }}
+      schema: staging
+      threads: 1
+      module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+    impact_radius:
+      type: duckdb
+      path: >-
+        {{ env_var('AFFILIATE_DUCKDB_PATH', env_var('HOME')) ~ '/affiliate_impact_radius.duckdb' }}
+      schema: staging
+      threads: 1
+      module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+    partnerize:
+      type: duckdb
+      path: >-
+        {{ env_var('AFFILIATE_DUCKDB_PATH', env_var('HOME')) ~ '/affiliate_partnerize.duckdb' }}
+      schema: staging
+      threads: 1
+      module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+    pepperjam:
+      type: duckdb
+      path: >-
+        {{ env_var('AFFILIATE_DUCKDB_PATH', env_var('HOME')) ~ '/affiliate_pepperjam.duckdb' }}
+      schema: staging
+      threads: 1
+      module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+    rakuten:
+      type: duckdb
+      path: >-
+        {{ env_var('AFFILIATE_DUCKDB_PATH', env_var('HOME')) ~ '/affiliate_rakuten.duckdb' }}
+      schema: staging
+      threads: 1
+      module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+    tradedoubler:
+      type: duckdb
+      path: >-
+        {{ env_var('AFFILIATE_DUCKDB_PATH', env_var('HOME')) ~ '/affiliate_tradedoubler.duckdb' }}
+      schema: staging
+      threads: 1
+      module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+    webgains:
+      type: duckdb
+      path: >-
+        {{ env_var('AFFILIATE_DUCKDB_PATH', env_var('HOME')) ~ '/affiliate_webgains.duckdb' }}
+      schema: staging
+      threads: 1
+      module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]

@@ -1,0 +1,22 @@
+name: dbt_affiliate_api
+version: 1.0.0
+config-version: 2
+
+profile: dbt_affiliate_api
+
+model-paths: ["models"]
+test-paths: ["dbt_tests"]
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+vars:
+  aws_s3_bucket: "s3://datawarehouse-unidays-datainsights/affiliate_networks_v2"
+
+models:
+  dbt_affiliate_api:
+    +materialized: table
+    +meta:
+      lookback_days: "{{ var('lookback_days', 7) }}"
+      end_date: "{{ var('end_date', run_started_at.strftime('%Y-%m-%d')) }}"
+      affiliate_network_name: "{{ var('affiliate_network_name', '') }}"

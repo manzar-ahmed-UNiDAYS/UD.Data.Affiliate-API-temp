@@ -1,0 +1,405 @@
+affiliate_defaults:
+  api_max_retry: 5
+  api_retry_delay: 10
+affiliate_pipelines:
+  - network_id: 7
+    network_name: awin_transactions
+    account_name: Awin Unidays INC US
+    credentials:
+      api_token: AFFILIATE_AWIN_API_TOKEN
+    feeds:
+      - feed_id: transactions
+        feed_name: transactions
+        program_id: "533915"
+        child_json_items:
+          - transactionParts
+          - basketProducts
+        request:
+          method: GET
+          url_template: https://api.awin.com/publishers/[[ program_id ]]/transactions/
+          query_params_template: >
+            endDate=[[ end_date | format_datetime("%Y-%m-%dT%H:%M:%SZ") ]]&
+            timezone=UTC&
+            dateType=transaction&
+            showBasketProducts=true&
+            startDate=[[ start_date | format_datetime("%Y-%m-%dT%H:%M:%SZ") ]]
+          headers_template: |
+            {
+              "Authorization": "Bearer [[ api_token ]]",
+              "Accept": "application/json"
+            }
+        response:
+          records_path: $
+        pagination:
+          mode: none
+
+  - network_id: 7
+    network_name: awin_validations
+    account_name: Awin Unidays INC US
+    credentials:
+      api_token: AFFILIATE_AWIN_API_TOKEN
+    feeds:
+      - feed_id: validations
+        feed_name: validations
+        program_id: "533915"
+        child_json_items:
+          - transactionParts
+          - basketProducts
+        request:
+          method: GET
+          url_template: https://api.awin.com/publishers/[[ program_id ]]/transactions/
+          query_params_template: >
+            endDate=[[ end_date | format_datetime("%Y-%m-%dT%H:%M:%SZ") ]]&
+            timezone=UTC&
+            dateType=validation&
+            showBasketProducts=true&
+            startDate=[[ start_date | format_datetime("%Y-%m-%dT%H:%M:%SZ") ]]
+          headers_template: |
+            {
+              "Authorization": "Bearer [[ api_token ]]",
+              "Accept": "application/json"
+            }
+        response:
+          records_path: $
+        pagination:
+          mode: none
+
+  - network_id: 13
+    network_name: commission_factory
+    account_name: Commission Factory
+    credentials:
+      api_token: AFFILIATE_COMMISSION_FACTORY_API_TOKEN
+    feeds:
+      - feed_id: transactions
+        feed_name: transactions
+        program_id: "7870"
+        child_json_items: []
+        request:
+          method: GET
+          url_template: https://api.commissionfactory.com/V1/Affiliate/Transactions
+          query_params_template: >
+            apiKey=[[ api_token ]]&
+            fromDate=[[ start_date | format_datetime("%Y-%m-%d") ]]&
+            toDate=[[ end_date | format_datetime("%Y-%m-%d") ]]&
+            dateProperty=DateCreated
+          headers_template: |
+            {
+              "Authorization": "Bearer [[ api_token ]]",
+              "Accept": "application/json"
+            }
+        response:
+          records_path: $
+        pagination:
+          mode: none
+
+  - network_id: 17
+    network_name: commission_junction
+    account_name: Commission Junction v2 UK
+    credentials:
+      api_token: AFFILIATE_COMMISSION_JUNCTION_API_TOKEN
+    feeds:
+      - feed_id: commissions
+        feed_name: commissions
+        program_id: "4033223"
+        child_json_items:
+          - items
+        request:
+          method: POST
+          url_template: https://commissions.api.cj.com/query
+          body_template: |
+            query {
+              publisherCommissions(
+                forPublishers: ["[[ program_id ]]"],
+                sinceEventDate: "[[ start_date | format_datetime("%Y-%m-%dT%H:%M:%SZ") ]]",
+                beforeEventDate: "[[ end_date | format_datetime("%Y-%m-%dT%H:%M:%SZ") ]]"[% if since_cursor %],
+                sinceCommissionId: "[[ since_cursor ]]"[% endif %]
+              ) {
+                count
+                payloadComplete
+                maxCommissionId
+                limit
+                records {
+                  shopperId
+                  country
+                  eventDate
+                  postingDate
+                  saleAmountPubCurrency
+                  orderDiscountPubCurrency
+                  pubCommissionAmountPubCurrency
+                  actionStatus
+                  actionType
+                  orderId
+                  commissionId
+                  original
+                  actionTrackerName
+                  websiteName
+                  advertiserId
+                  advertiserName
+                  coupon
+                  clickReferringURL
+                  correctionReason
+                  publisherId
+                  reviewedStatus
+                  validationStatus
+                  lockingDate
+                  lockingMethod
+                  items {
+                    quantity
+                    itemListId
+                    commissionItemId
+                    discountPubCurrency
+                    perItemSaleAmountPubCurrency
+                    totalCommissionPubCurrency
+                    sku
+                  }
+                }
+              }
+            }
+          headers_template: |
+            {
+              "Authorization": "Bearer [[ api_token ]]",
+              "Accept": "application/json"
+            }
+        response:
+          records_path: data.publisherCommissions.records
+        pagination:
+          mode: cursor
+          cursor_path: data.publisherCommissions.maxCommissionId
+          cursor_complete_path: data.publisherCommissions.payloadComplete
+
+  - network_id: 67
+    network_name: hasoffers
+    account_name: HasOffers Opinion Outpost US
+    api_retry_delay: 60
+    credentials:
+      api_token: AFFILIATE_HASOFFERS_API_TOKEN
+    feeds:
+      - feed_id: conversions
+        feed_name: conversions
+        program_id: "14229"
+        child_json_items: []
+        request:
+          method: GET
+          url_template: https://ssi.api.hasoffers.com/Apiv3/json
+          query_params_template: >
+            api_key=[[ api_token ]]&
+            Target=Affiliate_Report&
+            Method=getConversions&
+            fields[]=Stat.sale_amount&
+            fields[]=Browser.display_name&
+            fields[]=Stat.conversion_status&
+            fields[]=Stat.offer_id&
+            fields[]=Stat.source&
+            fields[]=Stat.refer&
+            fields[]=Stat.is_adjustment&
+            fields[]=Stat.id&
+            fields[]=Stat.datetime&
+            fields[]=Stat.affiliate_info1&
+            fields[]=Country.name&
+            fields[]=Stat.conversion_status&
+            fields[]=OfferUrl.id&
+            fields[]=Offer.name&
+            fields[]=Stat.user_agent&
+            fields[]=Stat.approved_payout&
+            fields[]=Stat.currency&
+            fields[]=Stat.date&
+            filters[Stat.date][conditional]=BETWEEN&
+            filters[Stat.date][values][]=[[ start_date | format_datetime("%Y-%m-%d") ]]&
+            filters[Stat.date][values][]=[[ end_date | format_datetime("%Y-%m-%d") ]]&
+            page=1
+          headers_template: |
+            {
+              "Accept": "application/json"
+            }
+        response:
+          records_path: response.data.data
+        pagination:
+          mode: page_count
+          current_page_path: response.data.page
+          total_pages_path: response.data.pageCount
+          page_param_name: page
+
+  - network_id: 21
+    network_name: impact_radius
+    account_name: Impact Radius UK
+    credentials:
+      api_username: AFFILIATE_IMPACT_RADIUS_API_USERNAME
+      api_password: AFFILIATE_IMPACT_RADIUS_API_PASSWORD
+    feeds:
+      - feed_id: actions
+        feed_name: actions
+        program_id: "172100"
+        child_json_items: []
+        request:
+          method: GET
+          url_template: https://api.impactradius.com/Mediapartners/[[ api_username ]]/Actions.json
+          query_params_template: >
+            PageSize=20000&
+            LockingDateStart=[[ start_date | format_datetime("%Y-%m-%dT%H:%M:%SZ") ]]&
+            LockingDateEnd=[[ end_date | format_datetime("%Y-%m-%dT%H:%M:%SZ") ]]&
+            Page=1
+          headers_template: |
+            {
+              "Authorization": "Basic [[ (api_username ~ ':' ~ api_password) | b64encode ]]",
+              "Accept": "application/json"
+            }
+        response:
+          records_path: Actions
+        pagination:
+          mode: next_url
+          next_url_path: "@nextpageuri"
+
+  - network_id: 30
+    network_name: partnerize
+    account_name: Partnerize Main
+    credentials:
+      api_username: AFFILIATE_PARTNERIZE_API_USERNAME
+      api_password: AFFILIATE_PARTNERIZE_API_PASSWORD
+    feeds:
+      - feed_id: conversions
+        feed_name: conversions
+        program_id: "100l1641"
+        child_json_items: []
+        request:
+          method: GET
+          url_template: https://api.partnerize.com/reporting/report_publisher/publisher/[[ program_id ]]/conversion.json
+          query_params_template: >
+            start_date=[[ start_date | format_datetime("%Y-%m-%dT%H:%M:%SZ") ]]&
+            end_date=[[ end_date | format_datetime("%Y-%m-%dT%H:%M:%SZ") ]]&
+            include_payment_info=true&
+            limit=300&
+            offset=0&
+            hm=1
+          headers_template: |
+            {
+              "Authorization": "Basic [[ (api_username ~ ':' ~ api_password) | b64encode ]]",
+              "Accept": "application/json"
+            }
+        response:
+          records_path: conversions
+        pagination:
+          mode: next_url
+          next_url_path: hypermedia.pagination.next_page
+          next_url_relative: true
+
+  - network_id: 37
+    network_name: pepperjam
+    account_name: PepperJam US
+    credentials:
+      api_password: AFFILIATE_PEPPERJAM_API_KEY
+    feeds:
+      - feed_id: transaction_details
+        feed_name: transaction_details
+        program_id: "140433"
+        child_json_items: []
+        request:
+          method: GET
+          url_template: https://api.pepperjamnetwork.com/20120402/publisher/report/transaction-details/
+          query_params_template: >
+            apiKey=[[ api_password ]]&
+            format=json&
+            includeCoupons=true&
+            deviceType=true&
+            website=all&
+            startDate=[[ start_date | format_datetime("%Y-%m-%d") ]]&
+            endDate=[[ end_date | format_datetime("%Y-%m-%d") ]]&
+            page=1
+          headers_template: |
+            {
+              "Accept": "application/json"
+            }
+        response:
+          records_path: data
+        pagination:
+          mode: next_url
+          next_url_path: meta.pagination.next.href
+
+  - network_id: 25
+    network_name: rakuten
+    account_name: Rakuten US
+    credentials:
+      access_token: AFFILIATE_RAKUTEN_ACCESS_TOKEN
+    feeds:
+      - feed_id: transactions
+        feed_name: transactions
+        program_id: "3298060"
+        child_json_items: []
+        request:
+          method: GET
+          url_template: https://api.linksynergy.com/events/1.0/transactions
+          query_params_template: >
+            transaction_date_start=[[ start_date | format_datetime("%Y-%m-%d %H:%M:%S") ]]&
+            transaction_date_end=[[ end_date | format_datetime("%Y-%m-%d %H:%M:%S") ]]&
+            limit=900&
+            page=1
+          headers_template: |
+            {
+              "Authorization": "Bearer [[ access_token ]]",
+              "Accept": "application/json"
+            }
+        response:
+          records_path: $
+        pagination:
+          mode: none
+
+  - network_id: 52
+    network_name: tradedoubler
+    account_name: Tradedoubler Main
+    credentials:
+      access_token: AFFILIATE_TRADEDOUBLER_ACCESS_TOKEN
+    feeds:
+      - feed_id: transactions
+        feed_name: transactions
+        program_id: "1597772"
+        child_json_items: []
+        request:
+          method: GET
+          url_template: https://connect.tradedoubler.com/publisher/report/transactions
+          query_params_template: >
+            fromDate=[[ start_date | format_datetime("%Y%m%d") ]]&
+            toDate=[[ end_date | format_datetime("%Y%m%d") ]]&
+            offset=0&
+            limit=100
+          headers_template: |
+            {
+              "Authorization": "Bearer [[ access_token ]]",
+              "Accept": "application/json"
+            }
+        response:
+          records_path: items
+        pagination:
+          mode: offset_limit
+          offset_path: offset
+          limit_path: limit
+          offset_param_name: offset
+          limit_param_name: limit
+
+  - network_id: 42
+    network_name: webgains
+    account_name: Webgains Main
+    credentials:
+      api_token: AFFILIATE_WEBGAINS_API_TOKEN
+    feeds:
+      - feed_id: transactions
+        feed_name: transactions
+        program_id: "60175"
+        child_json_items: []
+        request:
+          method: GET
+          url_template: https://platform-api.webgains.com/publishers/[[ program_id ]]/reports/transactions
+          query_params_template: >
+            start_date=[[ start_date | format_datetime(unix=True) ]]&
+            end_date=[[ end_date | format_datetime(unix=True) ]]&
+            page=1
+          headers_template: |
+            {
+              "Authorization": "Bearer [[ api_token ]]",
+              "Accept": "application/json"
+            }
+        response:
+          records_path: data
+        pagination:
+          mode: page_count
+          current_page_path: pagination.current_page
+          total_pages_path: pagination.last_page
+          page_param_name: page
