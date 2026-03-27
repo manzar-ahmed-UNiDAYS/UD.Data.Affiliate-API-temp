@@ -7,6 +7,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import mock
 
+from dbt_affiliate_api_bundle import get_project_dir
 from python_utils.feed_config import (
     get_feed_spec,
     list_feed_specs,
@@ -60,6 +61,18 @@ class DbtRuntimeHelpersTest(unittest.TestCase):
         self.assertTrue(specs)
         awin_transactions = get_feed_spec("awin_transactions", "transactions")
         self.assertEqual(awin_transactions.network_id, 7)
+
+    def test_bundled_project_assets_exist(self) -> None:
+        project_dir = get_project_dir()
+
+        self.assertTrue((project_dir / "affiliate_config.yml").is_file())
+        self.assertTrue((project_dir / "dbt_project.yml").is_file())
+        self.assertTrue((project_dir / "profiles.yml").is_file())
+        self.assertTrue((project_dir / "macros" / "affiliate_helper.sql").is_file())
+        self.assertTrue((project_dir / "models" / "step1_http.py").is_file())
+        self.assertTrue((project_dir / "models" / "step2_transactions.sql").is_file())
+        self.assertTrue((project_dir / "models" / "step3_upload_to_s3.sql").is_file())
+        self.assertTrue((project_dir / "models" / "step4_copy_to_redshift.sql").is_file())
 
     def test_resolve_feed_spec_reads_affiliate_config(self) -> None:
         with TemporaryDirectory() as temp_dir:

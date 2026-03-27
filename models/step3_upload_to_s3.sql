@@ -39,8 +39,8 @@
 {% endif %}
 
 {{ log(" ", info=True) }}
-{{ log("INFO: aws_s3_bucket: " ~ aws_s3_bucket, info=True) }}
-{{ log("INFO: export_path: " ~ export_path, info=True) }}
+{{ log("ℹ️ aws_s3_bucket: " ~ aws_s3_bucket, info=True) }}
+{{ log("ℹ️ export_path: " ~ export_path, info=True) }}
 {{ log(" ", info=True) }}
 
 {% set hook_database           = this.database %}

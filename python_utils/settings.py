@@ -29,7 +29,13 @@ def get_project_root() -> Path:
     raw_root = os.getenv("DBT_PROJECT_DIR")
     if raw_root:
         return Path(raw_root).expanduser().resolve()
-    return Path(__file__).resolve().parents[1]
+
+    try:
+        from dbt_affiliate_api_bundle import get_project_dir
+    except ImportError:
+        return Path(__file__).resolve().parents[1]
+
+    return get_project_dir()
 
 
 @lru_cache(maxsize=1)

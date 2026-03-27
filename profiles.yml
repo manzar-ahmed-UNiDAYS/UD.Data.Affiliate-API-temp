@@ -1,6 +1,8 @@
 dbt_affiliate_api:
   target: "{{ env_var('AFFILIATE_DBT_TARGET', 'awin_transactions') }}"
+# DuckDB connections for staging raw data, used in step1_extract_from_api.sql and step2_transactions.sql  
   outputs:
+
     awin_transactions:
       type: duckdb
       path: >-
@@ -8,6 +10,7 @@ dbt_affiliate_api:
       schema: staging
       threads: 1
       module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+
     awin_validations:
       type: duckdb
       path: >-
@@ -15,6 +18,7 @@ dbt_affiliate_api:
       schema: staging
       threads: 1
       module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+
     commission_factory:
       type: duckdb
       path: >-
@@ -22,6 +26,7 @@ dbt_affiliate_api:
       schema: staging
       threads: 1
       module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+
     commission_junction:
       type: duckdb
       path: >-
@@ -29,6 +34,7 @@ dbt_affiliate_api:
       schema: staging
       threads: 1
       module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+
     hasoffers:
       type: duckdb
       path: >-
@@ -36,6 +42,7 @@ dbt_affiliate_api:
       schema: staging
       threads: 1
       module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+
     impact_radius:
       type: duckdb
       path: >-
@@ -43,6 +50,7 @@ dbt_affiliate_api:
       schema: staging
       threads: 1
       module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+
     partnerize:
       type: duckdb
       path: >-
@@ -50,6 +58,7 @@ dbt_affiliate_api:
       schema: staging
       threads: 1
       module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+
     pepperjam:
       type: duckdb
       path: >-
@@ -57,6 +66,7 @@ dbt_affiliate_api:
       schema: staging
       threads: 1
       module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+
     rakuten:
       type: duckdb
       path: >-
@@ -64,6 +74,7 @@ dbt_affiliate_api:
       schema: staging
       threads: 1
       module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+
     tradedoubler:
       type: duckdb
       path: >-
@@ -71,6 +82,7 @@ dbt_affiliate_api:
       schema: staging
       threads: 1
       module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+      
     webgains:
       type: duckdb
       path: >-
@@ -78,3 +90,26 @@ dbt_affiliate_api:
       schema: staging
       threads: 1
       module_paths: ["{{ env_var('DBT_AFFILIATE_PROJECT_DIR') }}"]
+
+# Redshift connections for loading final transformed data, used in step3_upload_to_s3.sql and downstream processes            
+    redshift_dev:
+      type: redshift
+      host: "{{ env_var('DBT_REDSHIFT_DEV_HOST', env_var('REDSHIFT_URI', '')) }}"
+      user: "{{ env_var('DBT_REDSHIFT_DEV_USER', env_var('REDSHIFT_DB_USER', '')) }}"
+      password: "{{ env_var('DBT_REDSHIFT_DEV_PASSWORD', env_var('REDSHIFT_DB_PASS', '')) }}"
+      port: "{{ env_var('DBT_REDSHIFT_DEV_PORT', '5439') | int }}"
+      dbname: "{{ env_var('DBT_REDSHIFT_DEV_DBNAME', env_var('REDSHIFT_DB_NAME', '')) }}"
+      schema: landing
+      threads: 1
+      sslmode: verify-full
+
+    redshift_prod:
+      type: redshift
+      host: "{{ env_var('DBT_REDSHIFT_PROD_HOST', env_var('REDSHIFT_URI', '')) }}"
+      user: "{{ env_var('DBT_REDSHIFT_PROD_USER', env_var('REDSHIFT_DB_USER', '')) }}"
+      password: "{{ env_var('DBT_REDSHIFT_PROD_PASSWORD', env_var('REDSHIFT_DB_PASS', '')) }}"
+      port: "{{ env_var('DBT_REDSHIFT_PROD_PORT', '5439') | int }}"
+      dbname: "{{ env_var('DBT_REDSHIFT_PROD_DBNAME', env_var('REDSHIFT_DB_NAME', '')) }}"
+      schema: landing
+      threads: 1
+      sslmode: verify-full

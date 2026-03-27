@@ -18,7 +18,7 @@ from python_utils.modeling import parse_date_string, resolve_window
 
 logger = logging.getLogger(__name__)
 
-def _log(message: str, label: str = "INFO") -> None:
+def _log(message: str, label: str = "ℹ️") -> None:
     # Print keeps the message visible in dbt Python model execution output.
     print(f"{datetime.now().strftime('%H:%M:%S')}  {label}: {message}")
     log_method = getattr(logger, label.lower(), logger.info)
@@ -26,11 +26,10 @@ def _log(message: str, label: str = "INFO") -> None:
 
 
 def _log_info(message: str) -> None:
-    _log(message, label="INFO")
-
+    _log(message, label="ℹ️")
 
 def _log_error(message: str) -> None:
-    _log(message, label="ERROR")
+    _log(message, label="❌")
 
 
 def _dbt_meta_value(dbt, key: str) -> str | None:
@@ -203,9 +202,9 @@ def model(dbt, session):
             _log_pretty_json("request_json", request_payload)
         if request_method and response_status_code is not None:
             if int(response_status_code) >= 400:
-                _log_error(f"{request_method} response code: {response_status_code}")
+                _log_error(f"❌ {request_method} response code: {response_status_code}")
             else:
-                _log_info(f"{request_method} response code: {response_status_code}")
+                _log_info(f"ℹ️ {request_method} response code: {response_status_code}")
 
         if batch_header_id is None:
             batch_header_id = _header_id(request_payload)

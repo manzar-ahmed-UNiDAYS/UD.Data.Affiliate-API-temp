@@ -15,42 +15,11 @@
 
 {% set selected_network = var('affiliate_network_name', target.name) %}
 {% set step1_relation = ref('step1_http') %}
-
-/**** Defensive Coding ***
-  Downstream Redshift SUPER columns can only handle varchar 65536, so split 
-  nested child JSON arrays/objects into separate columns before load/export.
-*/
-{% set network_child_json_items = {
-  'awin_transactions': {'transaction_parts': '$.transactionParts',
-           'basket_products': '$.basketProducts'},
-
-  'awin_validations': {'transaction_parts': '$.transactionParts',
-           'basket_products': '$.basketProducts'},
-
-  'commission_factory': {'items': '$.Items'},
-
-  'commission_junction': {'items': '$.items'},
-
-  'hasoffers': {},
-
-  'impact_radius': {},
-
-  'partnerize': {'conversion_items': '$.conversion_data.conversion_items'},
-
-  'pepperjam': {},
-
-  'rakuten': {},
-
-  'tradedoubler': {'product_info': '$.productInfo'},
-
-  'webgains': {'items': '$.items'}
-} %}
-
-{% set child_json_items = network_child_json_items.get(selected_network, {}) %}
+{% set child_json_items = affiliate_child_json_items(selected_network) %}
 
 {% if execute %}
   {{ log(" ", info=True) }}
-  {{ log("INFO: child_json_items: " ~ (child_json_items | tojson), info=true) }}
+  {{ log("ℹ️ child_json_items: " ~ (child_json_items | tojson), info=true) }}
   {{ log(" ", info=True) }}
 {% endif %}
 
